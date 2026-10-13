@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#173b27">
+    <title>Subscription Leak Detector</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <div class="brand-icon">↗</div>
+                <div><strong>Leak Detector</strong><small>Subscription control</small></div>
+            </div>
+
+            <p class="nav-label">WORKSPACE</p>
+            <button class="nav-button active" data-page="dashboard">⌂ <span>Dashboard</span></button>
+            <button class="nav-button" data-page="subscriptions">▤ <span>Subscriptions</span></button>
+            <button class="nav-button" data-page="renewals">◷ <span>Renewals & Calendar</span></button>
+            <button class="nav-button" data-page="insights">⌁ <span>Leak Insights</span></button>
+            <button class="nav-button" data-page="settings">⚙ <span>Settings & Backup</span></button>
+
+            <div class="sidebar-tip">
+                <span class="tip-icon">✦</span>
+                <h3>Find your leaks</h3>
+                <p>Spot unused plans, duplicate categories and upcoming charges.</p>
+                <button class="main-button full-width" id="demoButton">Load demo data</button>
+            </div>
+            <button class="clear-button" id="clearButton">Clear all data</button>
+            <p class="sidebar-foot">Private by design · Saved in this browser</p>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button id="menuButton" class="menu-button" aria-label="Open menu">☰</button>
+                    <div><p class="eyebrow" id="pageEyebrow">YOUR MONEY, MADE CLEAR</p><h2 id="pageTitle">Dashboard</h2></div>
+                </div>
+                <div class="top-actions">
+                    <label class="currency-label" for="currencySelect">Display currency</label>
+                    <select id="currencySelect" aria-label="Display currency">
+                        <option value="INR">₹ INR</option>
+                        <option value="USD">$ USD</option>
+                        <option value="EUR">€ EUR</option>
+                        <option value="GBP">£ GBP</option>
+                        <option value="AED">د.إ AED</option>
+                        <option value="SGD">S$ SGD</option>
+                    </select>
+                    <button id="darkButton" class="icon-button" title="Toggle dark mode" aria-label="Toggle dark mode">☾</button>
+                </div>
+            </header>
+            <div class="content" id="content"></div>
+        </main>
+    </div>
+
+    <div class="modal-background" id="modal" aria-hidden="true">
+        <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-header">
+                <div><p class="eyebrow">KEEP YOUR LIST UP TO DATE</p><h2 id="modalTitle">Add subscription</h2></div>
+                <button id="closeModal" class="icon-button" aria-label="Close dialog">✕</button>
+            </div>
+            <form id="subscriptionForm">
+                <input type="hidden" id="subscriptionId">
+                <div class="form-grid">
+                    <label>Service name *
+                        <input id="serviceName" type="text" maxlength="70" placeholder="e.g. Netflix" required>
+                    </label>
+                    <label>Category *
+                        <select id="category" required>
+                            <option value="">Choose category</option>
+                            <option>Streaming</option><option>Software</option><option>Music</option>
+                            <option>Gaming</option><option>Education</option><option>Cloud</option>
+                            <option>News</option><option>Fitness</option><option>Shopping</option><option>Other</option>
+                        </select>
+                    </label>
+                    <label>Price per billing cycle *
+                        <input id="price" type="number" min="0.01" max="100000000" step="0.01" placeholder="199" required>
+                    </label>
+                    <label>Price currency *
+                        <select id="subCurrency">
+                            <option value="INR">INR — Indian Rupee</option><option value="USD">USD — US Dollar</option>
+                            <option value="EUR">EUR — Euro</option><option value="GBP">GBP — British Pound</option>
+                            <option value="AED">AED — UAE Dirham</option><option value="SGD">SGD — Singapore Dollar</option>
+                        </select>
+                    </label>
+                    <label>Billing cycle *
+                        <select id="billing"><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select>
+                    </label>
+                    <label>Next renewal date *
+                        <input id="renewalDate" type="date" required>
+                    </label>
+                    <label>Usage level
+                        <select id="usage"><option value="high">High — use often</option><option value="medium" selected>Medium — sometimes</option><option value="low">Low — rarely</option><option value="none">Not using</option></select>
+                    </label>
+                    <label>Last used date
+                        <input id="lastUsed" type="date">
+                    </label>
+                    <label>Subscription status
+                        <select id="status"><option value="active">Active</option><option value="paused">Paused</option><option value="cancelled">Cancelled</option></select>
+                    </label>
+                    <label>Free-trial end date
+                        <input id="trialEndDate" type="date">
+                    </label>
+                    <label class="check-label"><input id="trial" type="checkbox"> This is currently a free trial</label>
+                    <label class="check-label"><input id="autoRenew" type="checkbox" checked> Auto-renew is on</label>
+                    <label class="wide-field">Notes
+                        <textarea id="notes" rows="3" maxlength="500" placeholder="Optional: why you need it, cancellation details, etc."></textarea>
+                    </label>
+                </div>
+                <p class="form-help">Fields marked * are required. Data stays in this browser unless you export it.</p>
+                <p id="formError" class="error" role="alert"></p>
+                <div class="modal-buttons">
+                    <button type="button" class="secondary-button" id="cancelModal">Cancel</button>
+                    <button type="submit" class="main-button">Save subscription</button>
+                </div>
+            </form>
+        </section>
+    </div>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <input type="file" id="importFile" accept=".json,application/json" hidden>
+    <script src="app.js"></script>
+</body>
+</html>
